@@ -2,6 +2,12 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.LinkedList;
 
+/*
+for d
+-2: bomb
+-1: unvisited
+0-8 ya know
+ */
 public class MinesweepSolver {
     Robot robot;
     Rectangle playfield;
@@ -9,6 +15,7 @@ public class MinesweepSolver {
     Pos firstblock;
     int amountBlocksX = 30;
     int amountBlocksY = 15;
+    int d[][];
 
     public MinesweepSolver(Rectangle playfield, int blocksize, Pos firstblock) {
         try {
@@ -19,6 +26,12 @@ public class MinesweepSolver {
         this.playfield = playfield;
         this.blocksize = blocksize;
         this.firstblock = firstblock;
+        d = new int[amountBlocksY][amountBlocksX];
+        for(int i=0; i<amountBlocksY;i++){
+            for(int j=0; j<amountBlocksX; j++){
+                d[i][j] =-1;
+            }
+        }
     }
 
     public Pos getMousePos(int x,int y){
@@ -26,6 +39,10 @@ public class MinesweepSolver {
         result.x = firstblock.x+blocksize/2+blocksize*x;
         result.y = firstblock.y+blocksize/2+blocksize*y;
         return result;
+    }
+
+    public int getValue(Pos pos){
+        return getValue(pos.x,pos.y);
     }
 
     public int getValue(int x, int y){
@@ -67,11 +84,31 @@ public class MinesweepSolver {
     }
 
     public void solve(){
-        Pos start = getMousePos(amountBlocksX/2,amountBlocksY/2);
+        Pos start = new Pos(amountBlocksX/2,amountBlocksY/2)
+        Pos startM = getMousePos(start.x,start.y);
         LinkedList<Pos> queue = new LinkedList<>();
-        robot.mouseMove(start.x,start.y);
+        robot.mouseMove(startM.x,startM.y);
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        
+        d[start.y][start.x] = 0;
+        queue.addAll(getAllNeighbours(start));
+        while(!queue.isEmpty()){
+            Pos p = queue.pop();
+            if(getValue(p))
+        }
+    }
+
+    public LinkedList<Pos> getAllNeighbours(Pos pos){
+        int i = pos.x-1 < 0 ? 0 : pos.x-1;
+        int j = pos.y-1 < 0 ? 0 : pos.y-1;
+        int imax = pos.x+1 >= amountBlocksX ? amountBlocksX-1 : pos.x+1;
+        int jmax = pos.y+1 >= amountBlocksY ? amountBlocksY-1 : pos.y+1;
+        LinkedList<Pos> result = new LinkedList<>();
+        for(;i<=imax;i++){
+            for(;j<=jmax;j++){
+                if(i!= pos.x && j!= pos.y)
+                    result.push(new Pos(i,j));
+            }
+        }
     }
 }
